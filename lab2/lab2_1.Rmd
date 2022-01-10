@@ -75,7 +75,7 @@ veyron <- 268
 
 3. Use the function `mean()` to calculate the mean top speed for the cars.
 ```{r}
-mean (c(venom_GT, chiron, veyron))
+mean(c(venom_GT, chiron, veyron))
 
 ```
 
