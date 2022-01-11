@@ -47,15 +47,35 @@ In the previous part of the lab, you exported a `.csv` of hot springs data. Let'
 ```{r}
 hot_springs <- readr::read_csv("hsprings_data.csv")
 ```
+```{r}
+spec(hot_springs)
+```
 
 Use the `str()` function to get an idea of the data structure of `hot_springs`.  
 ```{r}
 str(hot_springs)
 ```
+```{r}
+glimpse(hot_springs)
+```
 
 What is the class of the scientist column? Change it to factor and then show the levels of that factor.  
 ```{r}
 class(hot_springs$scientist)
+```
+```{r}
+class(hot_springs$depth)
+```
+```{r}
+levels(hot_springs$scientist)
+```
+```{r}
+##how to change class
+hot_springs$scientist <- as.factor(hot_springs$scientist)
+```
+
+```{r}
+levels(hot_springs$scientist)
 ```
 
 ```{r}
