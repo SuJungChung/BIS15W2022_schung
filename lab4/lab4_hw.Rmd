@@ -3,9 +3,9 @@ title: "Lab 4 Homework"
 author: "Please Add Your Name Here"
 date: "`r Sys.Date()`"
 output:
-  html_document:
+  html_document: 
     theme: spacelab
-    toc: no
+    keep_md: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -30,24 +30,105 @@ Reference: Tamburello N, Cote IM, Dulvy NK (2015) Energy and the scaling of anim
 Data: http://datadryad.org/resource/doi:10.5061/dryad.q5j65/1  
 
 **1. Load the data into a new object called `homerange`.**
+```{r}
+getwd()
+```
+```{r}
+homerange <- readr::read_csv("data/Tamburelloetal_HomeRangeDatabase.csv")
+```
+```{r}
+library(janitor)
+```
+
+```{r}
+homerange
+```
 
 **2. Explore the data. Show the dimensions, column names, classes for each variable, and a statistical summary. Keep these as separate code chunks.**  
+```{r}
+dim(homerange)
+```
+```{r}
+new_homerange <- clean_names(homerange)
+```
+```{r}
+names(new_homerange)
+```
+```{r}
+str(new_homerange)
+```
+
+```{r}
+summary(new_homerange)
+```
 
 **3. Change the class of the variables `taxon` and `order` to factors and display their levels.**  
+```{r}
+new_homerange$taxon <- as.factor(new_homerange$taxon)
+class(new_homerange$taxon)
+levels(new_homerange$taxon)
+```
+```{r}
+new_homerange$order <- as.factor(new_homerange$order)
+class(new_homerange$order)
+levels(new_homerange$order)
+```
 
 **4. What taxa are represented in the `homerange` data frame? Make a new data frame `taxa` that is restricted to taxon, common name, class, order, family, genus, species.**  
+```{r}
+taxa<- select(new_homerange, "taxon","common_name","class","order","family","genus","species")
+taxa
+```
 
 **5. The variable `taxon` identifies the large, common name groups of the species represented in `homerange`. Make a table the shows the counts for each of these `taxon`.**  
+```{r}
+count(taxa, c(taxon))
+```
 
 **6. The species in `homerange` are also classified into trophic guilds. How many species are represented in each trophic guild.**  
+```{r}
+count(new_homerange, c(trophic_guild))
+```
 
 **7. Make two new data frames, one which is restricted to carnivores and another that is restricted to herbivores.**  
+```{r}
+carnivore <- filter(new_homerange, trophic_guild=="carnivore")
+carnivore
+```
+```{r}
+herbivore <- filter(new_homerange, trophic_guild=="herbivore")
+herbivore
+```
 
 **8. Do herbivores or carnivores have, on average, a larger `mean.hra.m2`? Remove any NAs from the data.**  
+```{r}
+mean(herbivore$mean_hra_m2, na.rm=T)
+```
+```{r}
+mean(carnivore$mean_hra_m2, na.rm=T)
+```
 
 **9. Make a new dataframe `deer` that is limited to the mean mass, log10 mass, family, genus, and species of deer in the database. The family for deer is cervidae. Arrange the data in descending order by log10 mass. Which is the largest deer? What is its common name?**  
+```{r}
+deer<- select(new_homerange,"mean_mass_g","log10_mass","family","genus","common_name")
+cervidae <- filter(deer, family == "cervidae")
+cervidae[order(cervidae$log10_mass),]
+
+```
+```{r}
+cervidae$common_name[which.max(cervidae$log10_mass)]
+```
 
 **10. As measured by the data, which snake species has the smallest homerange? Show all of your work, please. Look this species up online and tell me about it!** **Snake is found in taxon column**    
+```{r}
+small <- select(new_homerange, "taxon","mean_hra_m2", "common_name")
+snake <- filter(small, taxon =="snakes")
+snake[order(snake$mean_hra_m2),]
+```
+```{r}
+snake$common_name[which.max(snake$mean_hra_m2)]
+```
+The timber rattlesnake is found primarily on the eastern half of the US.  They feed on small birds, frogs, small snakes, and other small animals. It is one of the most dangerous snakes in North America due to their venom.  Before striking, they will rattle their tail.  They can be found in a diverse range of habitats from mountainous forests to river floodplains and agricultural fields.  They are usually found coiled up, waiting for prey to come to them before striking. 
 
 ## Push your final code to GitHub!
 Please be sure that you check the `keep md` file in the knit preferences.   
