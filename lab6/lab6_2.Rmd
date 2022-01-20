@@ -29,6 +29,8 @@ library("palmerpenguins")
 ## Review
 The summarize() and group_by() functions are powerful tools that we can use to produce clean summaries of data. Especially when used together, we can quickly group variables of interest and save time. Let's do some practice with the [palmerpenguins(https://allisonhorst.github.io/palmerpenguins/articles/intro.html) data to refresh our memory.
 ```{r}
+#penguins<-remotes::install_github("allisonhorst/palmerpenguins")
+penguins <- penguins
 glimpse(penguins)
 ```
 
@@ -94,6 +96,7 @@ For counts, I am starting to prefer `tabyl()`. Lots of options are supported in 
 ```{r}
 penguins %>% 
   tabyl(island, species)
+#convenient for reports
 ```
 
 ```{r}
@@ -105,18 +108,26 @@ penguins %>%
 
 ## Practice
 1. Produce a summary of the mean for bill_length_mm, bill_depth_mm, flipper_length_mm, and body_mass_g within Adelie penguins only. Be sure to provide the number of samples.
-```{r}
 
+```{r}
+penguins%>%
+  filter(species =="Adelie")%>%
+  select(bill_length_mm, flipper_length_mm, body_mass_g)%>%
+  summarize(mean_bill_length_mm = mean(bill_length_mm, na.rm=T),
+mean_flipper_length_mm = mean(flipper_length_mm, na.rm=T),
+ mean_body_mass_g = mean(body_mass_g, na.rm=T))
 ```
 
 2. How does the mean of `bill_length_mm` compare between penguin species?
 ```{r}
-
+penguins%>%
+  group_by(species)%>%
+  summarize(mean_bill_length_mm=mean(bill_length_mm, na.rm=T))
 ```
 
 3. For some penguins, their sex is listed as NA. Where do these penguins occur?
 ```{r}
-
+penguins%>% count(sex, island)
 ```
 
 ## `across()`
