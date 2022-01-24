@@ -112,7 +112,6 @@ penguins %>%
 ```{r}
 penguins%>%
   filter(species =="Adelie")%>%
-  select(bill_length_mm, flipper_length_mm, body_mass_g)%>%
   summarize(mean_bill_length_mm = mean(bill_length_mm, na.rm=T),
 mean_flipper_length_mm = mean(flipper_length_mm, na.rm=T),
  mean_body_mass_g = mean(body_mass_g, na.rm=T))
