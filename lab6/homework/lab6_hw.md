@@ -157,6 +157,36 @@ There are 71 columns and 17692 rows. The variables are common names, country nam
 
 ```r
 fisheries <- clean_names(fisheries)
+fisheries%>%
+  mutate(isscaap_group_number=as.character(isscaap_group_number), country=as.character(country), asfis_species_number=as.character(asfis_species_number), fao_major_fishing_area=as.character(fao_major_fishing_area))
+```
+
+```
+## # A tibble: 17,692 x 71
+##    country common_name    isscaap_group_nu~ isscaap_taxonomic_~ asfis_species_n~
+##    <chr>   <chr>          <chr>             <chr>               <chr>           
+##  1 Albania Angelsharks, ~ 38                Sharks, rays, chim~ 10903XXXXX      
+##  2 Albania Atlantic boni~ 36                Tunas, bonitos, bi~ 1750100101      
+##  3 Albania Barracudas nei 37                Miscellaneous pela~ 17710001XX      
+##  4 Albania Blue and red ~ 45                Shrimps, prawns     2280203101      
+##  5 Albania Blue whiting(~ 32                Cods, hakes, haddo~ 1480403301      
+##  6 Albania Bluefish       37                Miscellaneous pela~ 1702021301      
+##  7 Albania Bogue          33                Miscellaneous coas~ 1703926101      
+##  8 Albania Caramote prawn 45                Shrimps, prawns     2280100117      
+##  9 Albania Catsharks, nu~ 38                Sharks, rays, chim~ 10801003XX      
+## 10 Albania Common cuttle~ 57                Squids, cuttlefish~ 3210200202      
+## # ... with 17,682 more rows, and 66 more variables: asfis_species_name <chr>,
+## #   fao_major_fishing_area <chr>, measure <chr>, x1950 <chr>, x1951 <chr>,
+## #   x1952 <chr>, x1953 <chr>, x1954 <chr>, x1955 <chr>, x1956 <chr>,
+## #   x1957 <chr>, x1958 <chr>, x1959 <chr>, x1960 <chr>, x1961 <chr>,
+## #   x1962 <chr>, x1963 <chr>, x1964 <chr>, x1965 <chr>, x1966 <chr>,
+## #   x1967 <chr>, x1968 <chr>, x1969 <chr>, x1970 <chr>, x1971 <chr>,
+## #   x1972 <chr>, x1973 <chr>, x1974 <chr>, x1975 <chr>, x1976 <chr>, ...
+```
+
+
+```r
+fisheries <- clean_names(fisheries)
 fisheries$country <- as.factor(fisheries$country)
 fisheries$isscaap_group_number <- as.factor(fisheries$isscaap_group_number)
 fisheries$asfis_species_name <- as.factor(fisheries$asfis_species_name)
@@ -259,25 +289,26 @@ fisheries_tidy%>%
 ```r
 fisheries_tidy%>%
   filter(year == "2000")%>%
-  arrange(desc(catch))
+  group_by(country)%>%
+  summarize(total_catch = sum(catch, na.rm = T))%>%
+  arrange(desc(total_catch))
 ```
 
 ```
-## # A tibble: 8,793 x 10
-##    country   common_name    isscaap_group_nu~ isscaap_taxonomi~ asfis_species_n~
-##    <fct>     <chr>          <fct>             <chr>             <chr>           
-##  1 China     Marine fishes~ 39                Marine fishes no~ 199XXXXXXX010   
-##  2 Peru      Anchoveta(=Pe~ 35                Herrings, sardin~ 1210600208      
-##  3 Russian ~ Alaska polloc~ 32                Cods, hakes, had~ 1480401601      
-##  4 Viet Nam  Marine fishes~ 39                Marine fishes no~ 199XXXXXXX010   
-##  5 Chile     Chilean jack ~ 37                Miscellaneous pe~ 1702300405      
-##  6 China     Marine mollus~ 58                Miscellaneous ma~ 399XXXXXXX016   
-##  7 China     Largehead hai~ 34                Miscellaneous de~ 1750600302      
-##  8 United S~ Alaska polloc~ 32                Cods, hakes, had~ 1480401601      
-##  9 China     Marine crusta~ 47                Miscellaneous ma~ 299XXXXXXX013   
-## 10 Philippi~ Scads nei      37                Miscellaneous pe~ 17023043XX      
-## # ... with 8,783 more rows, and 5 more variables: asfis_species_name <fct>,
-## #   fao_major_fishing_area <fct>, measure <chr>, year <dbl>, catch <dbl>
+## # A tibble: 193 x 2
+##    country                  total_catch
+##    <fct>                          <dbl>
+##  1 China                          25899
+##  2 Russian Federation             12181
+##  3 United States of America       11762
+##  4 Japan                           8510
+##  5 Indonesia                       8341
+##  6 Peru                            7443
+##  7 Chile                           6906
+##  8 India                           6351
+##  9 Thailand                        6243
+## 10 Korea, Republic of              6124
+## # ... with 183 more rows
 ```
 China had the largest overall catch in the year 2000.
 
@@ -286,25 +317,26 @@ China had the largest overall catch in the year 2000.
 ```r
 fisheries_tidy%>%
   filter(between(year, 1990, 2000) & asfis_species_name == "Sardina pilchardus")%>%
-  arrange(desc(catch))
+  group_by(country)%>%
+  summarize(total_catch = sum(catch, na.rm =T))%>%
+    arrange(desc(total_catch))
 ```
 
 ```
-## # A tibble: 336 x 10
-##    country   common_name    isscaap_group_nu~ isscaap_taxonomi~ asfis_species_n~
-##    <fct>     <chr>          <fct>             <chr>             <chr>           
-##  1 Morocco   European pilc~ 35                Herrings, sardin~ 1210506401      
-##  2 Morocco   European pilc~ 35                Herrings, sardin~ 1210506401      
-##  3 Spain     European pilc~ 35                Herrings, sardin~ 1210506401      
-##  4 Morocco   European pilc~ 35                Herrings, sardin~ 1210506401      
-##  5 Morocco   European pilc~ 35                Herrings, sardin~ 1210506401      
-##  6 Morocco   European pilc~ 35                Herrings, sardin~ 1210506401      
-##  7 Morocco   European pilc~ 35                Herrings, sardin~ 1210506401      
-##  8 Morocco   European pilc~ 35                Herrings, sardin~ 1210506401      
-##  9 Russian ~ European pilc~ 35                Herrings, sardin~ 1210506401      
-## 10 Russian ~ European pilc~ 35                Herrings, sardin~ 1210506401      
-## # ... with 326 more rows, and 5 more variables: asfis_species_name <fct>,
-## #   fao_major_fishing_area <fct>, measure <chr>, year <dbl>, catch <dbl>
+## # A tibble: 37 x 2
+##    country               total_catch
+##    <fct>                       <dbl>
+##  1 Morocco                      7470
+##  2 Spain                        3507
+##  3 Russian Federation           1639
+##  4 Ukraine                      1030
+##  5 France                        966
+##  6 Portugal                      818
+##  7 Greece                        528
+##  8 Italy                         507
+##  9 Serbia and Montenegro         478
+## 10 Denmark                       477
+## # ... with 27 more rows
 ```
 Morocco caught the most number of Sardines between 1990 and 2000.
 
@@ -313,54 +345,57 @@ Morocco caught the most number of Sardines between 1990 and 2000.
 ```r
 fisheries_tidy%>%
   filter(between(year, 2008, 2012) & isscaap_taxonomic_group == "Squids, cuttlefishes, octopuses")%>%
-  arrange(desc(catch))
+  group_by(country)%>%
+  summarize(total_catch = sum(catch, na.rm = T))%>%
+  arrange(desc(total_catch))
 ```
 
 ```
-## # A tibble: 1,801 x 10
-##    country    common_name    isscaap_group_n~ isscaap_taxonomi~ asfis_species_n~
-##    <fct>      <chr>          <fct>            <chr>             <chr>           
-##  1 Indonesia  Common squids~ 57               Squids, cuttlefi~ 32104001XX      
-##  2 China      Various squid~ 57               Squids, cuttlefi~ 32105XXXXX036   
-##  3 Chile      Jumbo flying ~ 57               Squids, cuttlefi~ 3210502301      
-##  4 United St~ Opalescent in~ 57               Squids, cuttlefi~ 3210400103      
-##  5 China      Various squid~ 57               Squids, cuttlefi~ 32105XXXXX036   
-##  6 Japan      Japanese flyi~ 57               Squids, cuttlefi~ 3210505803      
-##  7 China      Cuttlefish, b~ 57               Squids, cuttlefi~ 32102XXXXX026   
-##  8 Peru       Jumbo flying ~ 57               Squids, cuttlefi~ 3210502301      
-##  9 Korea, Re~ Argentine sho~ 57               Squids, cuttlefi~ 3210501003      
-## 10 Peru       Jumbo flying ~ 57               Squids, cuttlefi~ 3210502301      
-## # ... with 1,791 more rows, and 5 more variables: asfis_species_name <fct>,
-## #   fao_major_fishing_area <fct>, measure <chr>, year <dbl>, catch <dbl>
+## # A tibble: 122 x 2
+##    country                  total_catch
+##    <fct>                          <dbl>
+##  1 China                           8349
+##  2 Korea, Republic of              3480
+##  3 Peru                            3422
+##  4 Japan                           3248
+##  5 Chile                           2775
+##  6 United States of America        2417
+##  7 Indonesia                       1622
+##  8 Taiwan Province of China        1394
+##  9 Spain                           1147
+## 10 France                          1138
+## # ... with 112 more rows
 ```
-The top 5 countries to catch cephalopods were Indonesia, China, Chile, USA, and Japan.
+The top 5 countries to catch cephalopods were China, Korea, Peru, Japan, Chile.
 
 9. Which species had the highest catch total between 2008-2012? (hint: Osteichthyes is not a species)
 
 ```r
 fisheries_tidy%>%
   filter(between(year, 2008, 2012))%>%
-  arrange(desc(catch))
+  group_by(asfis_species_name)%>%
+  summarize(total_catch = sum(catch, na.rm =T))%>%
+  arrange(desc(total_catch))
 ```
 
 ```
-## # A tibble: 51,014 x 10
-##    country   common_name    isscaap_group_nu~ isscaap_taxonomi~ asfis_species_n~
-##    <fct>     <chr>          <fct>             <chr>             <chr>           
-##  1 Viet Nam  Marine fishes~ 39                Marine fishes no~ 199XXXXXXX010   
-##  2 Myanmar   Marine fishes~ 39                Marine fishes no~ 199XXXXXXX010   
-##  3 Viet Nam  Marine fishes~ 39                Marine fishes no~ 199XXXXXXX010   
-##  4 China     Largehead hai~ 34                Miscellaneous de~ 1750600302      
-##  5 Russian ~ Alaska polloc~ 32                Cods, hakes, had~ 1480401601      
-##  6 Peru      Anchoveta(=Pe~ 35                Herrings, sardin~ 1210600208      
-##  7 Norway    Atlantic herr~ 35                Herrings, sardin~ 1210500105      
-##  8 Norway    Atlantic herr~ 35                Herrings, sardin~ 1210500105      
-##  9 Peru      Anchoveta(=Pe~ 35                Herrings, sardin~ 1210600208      
-## 10 China     Largehead hai~ 34                Miscellaneous de~ 1750600302      
-## # ... with 51,004 more rows, and 5 more variables: asfis_species_name <fct>,
-## #   fao_major_fishing_area <fct>, measure <chr>, year <dbl>, catch <dbl>
+## # A tibble: 1,472 x 2
+##    asfis_species_name    total_catch
+##    <fct>                       <dbl>
+##  1 Osteichthyes               107808
+##  2 Theragra chalcogramma       41075
+##  3 Engraulis ringens           35523
+##  4 Katsuwonus pelamis          32153
+##  5 Trichiurus lepturus         30400
+##  6 Clupea harengus             28527
+##  7 Thunnus albacares           20119
+##  8 Scomber japonicus           14723
+##  9 Gadus morhua                13253
+## 10 Thunnus alalunga            12019
+## # ... with 1,462 more rows
 ```
-The fish with the highest catch (that was able to be identified) was Tirchirus lepturus aka the Largehead hairtail.
+The fish with the highest catch (that was able to be identified) was Theragra chalcogramma.
+
 10. Use the data to do at least one analysis of your choice.
 
 ## Push your final code to GitHub!
