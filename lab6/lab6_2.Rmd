@@ -192,7 +192,7 @@ mean
 penguins %>%
   filter(!is.na(across(ends_with("mm"))))%>%
   group_by(species)%>%
-  summarize(across(ends_with("mm"), sd),n=n())
+  summarize(across(ends_with("mm"), na.rm = T, sd),n=n())
 ```
 ```{r}
 penguins%>%
