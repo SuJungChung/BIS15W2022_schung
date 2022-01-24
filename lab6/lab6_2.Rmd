@@ -162,6 +162,7 @@ penguins %>%
 table1 <- penguins %>%
   group_by(sex) %>% 
   summarize(across(contains("mm"), mean, na.rm=T))
+table1
 ```
 
 Here we summarize across all variables.
@@ -186,8 +187,18 @@ penguins %>%
 ## Practice
 1. Produce separate summaries of the mean and standard deviation for bill_length_mm, bill_depth_mm, and flipper_length_mm for each penguin species. Be sure to provide the number of samples.  
 mean
-```{r}
 
+```{r}
+penguins %>%
+  filter(!is.na(across(ends_with("mm"))))%>%
+  group_by(species)%>%
+  summarize(across(ends_with("mm"), sd),n=n())
+```
+```{r}
+penguins%>%
+  filter(!is.na(across(ends_with("mm"))))%>%
+  group_by(species)%>%
+  summarize(across(ends_with("mm"), mean, na.rm=T))
 ```
 
 ## Wrap-up  
