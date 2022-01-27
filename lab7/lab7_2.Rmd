@@ -42,18 +42,35 @@ life_history <- read_csv("data/mammal_lifehistories_v3.csv") %>% clean_names()
 
 2. Use one or more of the functions from the last lab to determine if there are NA's in the data, how they are represented, and where they are located.
 ```{r}
-
+glimpse(life_history)
+#can see -999
 ```
 
 ```{r}
-
+summary(life_history)
+#mean value doesn't make sense!
+```
+```{r}
+life_history%>%
+  purrr::map_df(~ sum(is.na(.)))
 ```
 
 
 3. Can we use a single approach to deal with NA's in this data set? Given what you learned in the previous lab, how would you manage the NA values?
 ```{r}
-
+life_history <- life_history%>%
+  na_if("-999")%>%
+  mutate(newborn=na_if(newborn, ("not measured")))
 ```
+```{r}
+life_history%>%
+  purrr::map_df(~ sum(is.na(.)))
+```
+```{r}
+names(life_history)
+```
+#ifyou look at newborn, you will see not measured!
+
 
 ## `naniar`
 `naniar` is a package that is built to manage NA's. Many of the functions it performs can also be performed using tidyverse functions, but it does provide some interesting alternatives.  
@@ -61,11 +78,14 @@ life_history <- read_csv("data/mammal_lifehistories_v3.csv") %>% clean_names()
 `miss_var_summary` provides a clean summary of NA's across the data frame.
 ```{r}
 naniar::miss_var_summary(life_history)
+#tells us the percent of how much data is missing!
+#doesn't make sense that we know the life span of all animals
 ```
 
 Notice that `max_life` has no NA's. Does that make sense in the context of this data?
 ```{r}
 hist(life_history$max_life)
+#why is there a lot of 0 for the life span?
 ```
 
 ```{r}
@@ -101,18 +121,26 @@ Some key information:
 
 1. Import the data and do a little exploration. Be sure to clean the names if necessary.
 ```{r}
-
+cites <- read_csv("data/cites.csv") %>%
+  clean_names()
+cites
 ```
 
 2. Use `naniar` to summarize the NA's in each variable.
 ```{r}
-
+naniar::miss_var_summary(cites)
 ```
 
 3. Try using `group_by()` with `naniar`. Look specifically at class and `exporter_reported_quantity`. For which taxonomic classes do we have a high proportion of missing export data?
 ```{r}
-
+cites%>%
+  group_by(class)%>%
+  select(class, exporter_reported_quantity)%>%
+  naniar::miss_var_summary()%>%
+  arrange(desc(pct_miss))
 ```
+Anthozoa with 100%
+
 
 ## Visualizing NAs
 There is another package `visdat` that can be used to visualize the proportion of different classes of data, including missing data. But, it is limited by size.
