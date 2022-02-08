@@ -27,7 +27,7 @@ library(naniar)
 
 For this homework, we will take a departure from biological data and use data about California colleges. These data are a subset of the national college scorecard (https://collegescorecard.ed.gov/data/). Load the `ca_college_data.csv` as a new object called `colleges`.
 ```{r}
-
+colleges <- readr::read_csv("data/ca_college_data.csv")
 ```
 
 The variables are a bit hard to decipher, here is a key:  
@@ -88,7 +88,11 @@ PFTFTUG1_EF: Percentage of undergraduate students who are first-time, full-time 
 
 8. The column titled `INSTNM` is the institution name. We are only interested in the University of California colleges. Make a new data frame that is restricted to UC institutions. You can remove `Hastings College of Law` and `UC San Francisco` as we are only interested in undergraduate institutions.
 ```{r}
-
+univ_calif <- colleges %>%
+  filter_all(any_vars(str_detect(., pattern = "University of California"))
+univ_calif
+#str_detect used to detect certain strings of line
+#problematic that the names have capitalization, dashes, and spaces
 ```
 
 Remove `Hastings College of Law` and `UC San Francisco` and store the final data frame as a new object `univ_calif_final`.
