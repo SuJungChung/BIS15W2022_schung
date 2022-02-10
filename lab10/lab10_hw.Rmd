@@ -52,17 +52,22 @@ count(species)
 ```
 ```{r}
 deserts%>%
+  group_by(genus)%>%
+```
+
+```{r}
+deserts%>%
   count(genus)
 ```
 
 3. What is the proportion of taxa included in this study? Show a table and plot that reflects this count.
 ```{r}
 deserts%>%
-  count(taxa)
+  tabyl(taxa)
 ```
 ```{r}
 deserts%>%
-  ggplot(aes(x =taxa))+geom_bar()
+  ggplot(aes(x =taxa))+geom_bar()+scale_y_log10()
 ```
 
 
@@ -94,7 +99,22 @@ deserts%>%
 
 9. Which two species have, on average, the highest weight? Once you have identified them, make a new column that is a ratio of `weight` to `hindfoot_length`. Make a plot that shows the range of this new ratio and fill by sex.
 ```{r}
+deserts%>% #if new column, use mutate
+  filter(weight!="NA")%>%
+  group_by(species)%>%
+  summarize(mean_weight=mean(weight))%>%
+  arrange(desc(mean_weight))
+```
+```{r}
+deserts%>%
+  filter(sepcies_id="NL" | species_id"DS")%>%
+  mutat(ratio-weight/hindfoot_length)%>%
+  select(sepcies_id, sex, weight, hindfoot_length, ratio)
+```
 
+```{r}
+deserts%>%
+  filter(species_id=="NL" | species_id)
 ```
 
 10. Make one plot of your choice! Make sure to include at least two of the aesthetics options you have learned.
