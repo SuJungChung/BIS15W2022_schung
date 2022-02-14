@@ -80,12 +80,15 @@ Let's assess whether or not these data are tidy.
 
 To fix this problem, we need to reshape the table to long format while keeping track of column names and values. We do this using `pivot_longer()`. Notice that the dimensions of the data frame change.  
 ```{r}
-heartrate %>% 
+heartrate<- heartrate %>% 
   pivot_longer(-patient, #patient does not pivot
                names_to = "drug", 
                values_to = "heartrate"
                )
+heartrate
 ```
+
+
 ```{r}
 heartrate%>%
   group_by(drug)%>%
@@ -99,9 +102,9 @@ relig_income
 ```
 
 2. Why are these data untidy?  
-Income is a variable, but it isn't in its own column.
+-Income is a variable, but it isn't in its own column.
 -values should be in their own column
-Each value does not have its own cell.
+-Each value does not have its own cell.
 
 3. Use `pivot_longer()` to make the data tidy.  
 ```{r}
