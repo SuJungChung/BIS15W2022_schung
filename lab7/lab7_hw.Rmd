@@ -45,30 +45,33 @@ amphibio <- readr::read_csv("data/amphibio.csv")
 
 ## Questions  
 **2. Do some exploratory analysis of the `amniota` data set. Use the function(s) of your choice. Try to get an idea of how NA's are represented in the data.**  
-```{r}
-skim(amniota)
-```
+
 ```{r}
 summary(amniota)
 ```
 
 ```{r}
-amniota%>%
-  count(is.na = TRUE)
+amniota %>% 
+  purrr::map_df(~ sum(is.na(.))) %>% 
+  pivot_longer(everything(),
+    names_to= "variables",
+    values_to = "num_nas") %>% 
+  arrange(desc(num_nas))
 ```
 
 **3. Do some exploratory analysis of the `amphibio` data set. Use the function(s) of your choice. Try to get an idea of how NA's are represented in the data.**  
 
 ```{r}
-skim(amphibio)
-```
-```{r}
-summary(amniota)
+summary(amphibio)
 ```
 
 ```{r}
-amphibio%>%
-  count(is.na=TRUE)
+amphibio %>% 
+  purrr::map_df(~ sum(is.na(.))) %>% 
+  pivot_longer(everything(),
+    names_to= "variables",
+    values_to = "num_nas") %>% 
+  arrange(desc(num_nas))
 ```
 
 
@@ -76,42 +79,58 @@ amphibio%>%
 
 `amniota`  
 ```{r}
-
+amniota%>% #this doesn't really make sense cause we see -999
+  summarize(number_nas=sum(is.na(amniota)))
 ```
 
 `amphibio`  
 ```{r}
-
+amphibio%>% #this makes sense because we didn't see -999
+  summarize(number_nas = sum(is.na(amphibio)))
 ```
 
 **5. Make any necessary replacements in the data such that all NA's appear as "NA".**   
 ```{r}
+amniota_tidy <- amniota %>% #change the -999 values to na
+  na_if("-999")
 
+amniota_tidy%>%
+  summarize(number_nas = sum(is.na(amniota_tidy)))
 ```
 
 **6. Use the package `naniar` to produce a summary, including percentages, of missing data in each column for the `amniota` data.**  
 ```{r}
-
+naniar::miss_var_summary(amniota_tidy)
 ```
 
 **7. Use the package `naniar` to produce a summary, including percentages, of missing data in each column for the `amphibio` data.**
 ```{r}
-
+naniar::miss_var_summary(amphibio)
 ```
 
 **8. For the `amniota` data, calculate the number of NAs in the `egg_mass_g` column sorted by taxonomic class; i.e. how many NA's are present in the `egg_mass_g` column in birds, mammals, and reptiles? Does this results make sense biologically? How do these results affect your interpretation of NA's?**  
-```{r}
 
+```{r}
+amniota_tidy%>%
+  group_by(class)%>%
+  summarize(number_nas = sum(is.na(egg_mass_g)))
 ```
+I think these numbers are reasonable considering how we might not understand the nesting behavior of egg laying organisms or that they do not lay eggs in general.
 
 **9. The `amphibio` data have variables that classify species as fossorial (burrowing), terrestrial, aquatic, or arboreal.Calculate the number of NA's in each of these variables. Do you think that the authors intend us to think that there are NA's in these columns or could they represent something else? Explain.**
-```{r}
 
+```{r}
+amphibio%>%
+  select(Fos, Ter, Aqu, Arb)%>%
+  summarise_all(~(sum(is.na(.))))
 ```
+I think that the na represent an "unchecked" box among the 4 different options of fossorial, terrestrial, aquatic, or arboreal.  If they are not fossorial species, it will be unchecked by placing an NA value in place.
 
 **10. Now that we know how NA's are represented in the `amniota` data, how would you load the data such that the values which represent NA's are automatically converted?**
 ```{r}
-
+amphibio <- 
+  readr::read_csv(file = "data/amphibio.csv", 
+                  na = c("NA", "-999"))
 ```
 
 ## Push your final code to GitHub!
