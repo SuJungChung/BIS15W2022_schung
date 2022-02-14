@@ -1,7 +1,7 @@
 ---
 title: "Lab 7 Homework"
-author: "Joel Ledford"
-date: "2022-02-13"
+author: "Sujung Chung"
+date: "2022-02-14"
 output:
   html_document: 
     theme: spacelab
