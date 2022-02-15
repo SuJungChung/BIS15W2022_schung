@@ -11,6 +11,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(janitor)
+
+```
+##Install Packages
+```{r}
+#install.packages("lubridate")
 ```
 
 ##pH Data
