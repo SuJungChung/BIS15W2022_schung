@@ -42,7 +42,7 @@ options(scipen=999) #cancels the use of scientific notation for the session
 For this tutorial, we will use:  
 [Homerange](http://datadryad.org/resource/doi:10.5061/dryad.q5j65/1). The data are from: Tamburello N, Cote IM, Dulvy NK (2015) Energy and the scaling of animal space use. The American Naturalist 186(2):196-211. http://dx.doi.org/10.1086/682070.  
 ```{r message=FALSE, warning=FALSE}
-homerange <- read_csv(here("lab11", "data", "Tamburelloetal_HomeRangeDatabase.csv"))
+homerange <- read_csv(here("lab11 Part 2", "data", "Tamburelloetal_HomeRangeDatabase.csv"))
 ```
 
 ## ggplot themes
@@ -182,19 +182,19 @@ Here we import the data and clean the names. Because these data have a header, t
 ecosphere <- read_csv("data/ecs21351-sup-0003-SupplementS1.csv", skip=2, col_names = T) %>% 
   clean_names() %>% 
   separate(scientific_name, into = c("genus", "species"), sep=" ") %>% 
-  na.omit()
+  na.omit() #remove NA for now, but be careful
 ```
 
 What if we were interested in a comparison of diet and mass, i.e. how does the range of masses compare by different diet types?  
 ```{r}
 ecosphere %>% 
-  ggplot(aes(x=diet, y=log10_mass, fill=diet))+ 
+  ggplot(aes(x=diet, y=log10_mass, fill=diet))+ #diet is categorical
   geom_boxplot(alpha=0.4)
 ```
 
 This is an interesting plot, but we might use a grouping function to explore the comparison to include migratory strategy.  
 ```{r}
-ecosphere %>% 
+ecosphere %>% #very busy, its comparing too many different categorical variables at once, hard to see patterns
   ggplot(aes(x=diet, y=log10_mass, fill=migratory_strategy))+ 
   geom_boxplot(alpha=0.4)
 ```
@@ -215,6 +215,19 @@ ecosphere %>%
 ```
 
 `facet_grid()` allows control over the faceted variable; it can be arranged in rows or columns.
+rows by columns
+
+```{r}
+ecosphere %>% 
+  ggplot(aes(x=diet, y=log10_mass, fill=migratory_strategy))+ #didn't specify the plot type yet, but we see the layout
+  facet_grid(.~migratory_strategy)+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))+
+  labs(title = "Mass by Diet and Migratory Strategy",
+       x = NULL,
+       y = "Log 10 Mass",
+       fill = "Migratory Strategy")
+```
+
 ```{r}
 ecosphere %>% 
   ggplot(aes(x=diet, y=log10_mass, fill=migratory_strategy))+ 
@@ -246,16 +259,32 @@ ecosphere %>%
   geom_density()+
   facet_grid(diet~habitat, scales = "free_y")
 ```
-
-## Practice
-1. Build a faceted plot that shows a distribution of life expectancy by habitat type.
 ```{r}
-
+ecosphere %>% 
+  ggplot(aes(x=log10_mass))+
+  geom_density()+
+  facet_grid(habitat~diet, scales = "free_y")
 ```
-
+## Practice
+1. Build a faceted plot that shows a distribution of mean_eggs_per_clutch by habitat type.
+```{r}
+ecosphere%>%
+ggplot(aes(x=mean_eggs_per_clutch))+
+  geom_density()+
+  facet_grid(.~habitat) #could have used facet wrap for this
+```
+```{r}
+ecosphere%>%
+ggplot(aes(x=mean_eggs_per_clutch))+
+  geom_density()+
+  facet_wrap(.~habitat)
+```
 2. Try the same plot as #1 above, but include life_expectancy~habitat.
 ```{r}
-
+ecosphere%>%
+  ggplot(aes(x=mean_eggs_per_clutch))+
+  geom_density()+
+  facet_grid(life_expectancy~habitat, scales = "free") #some will be blank becuase there are no long life expectancies in those areas
 ```
 
 ## That's it, let's take a break!   
