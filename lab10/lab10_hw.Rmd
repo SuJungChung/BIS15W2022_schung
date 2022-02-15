@@ -3,9 +3,9 @@ title: "Lab 10 Homework"
 author: "Please Add Your Name Here"
 date: "`r Sys.Date()`"
 output:
-  html_document:
+  html_document: 
     theme: spacelab
-    toc: no
+    keep_md: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -37,27 +37,24 @@ summary(deserts)
 ```
 ```{r}
 deserts%>%
-count(is.na=TRUE)
+summarize(number_nas=sum(is.na(deserts)))
 ```
 ```{r}
 deserts
 ```
 
-The NAs are input into the data as NA. #need to check if the data is tidy
+The NAs are input into the data as NA. Data is tidy!
 
 2. How many genera and species are represented in the data? What are the total number of observations? Which species is most/ least frequently sampled in the study?
 ```{r}
 deserts%>%
-count(species)
-```
-```{r}
-deserts%>%
-  group_by(genus)%>%
+  summarize(genera=n_distinct(genus), species=n_distinct(species), n=n())
 ```
 
 ```{r}
 deserts%>%
-  count(genus)
+  count(species_id)%>%
+  arrange(desc(n))
 ```
 
 3. What is the proportion of taxa included in this study? Show a table and plot that reflects this count.
@@ -67,35 +64,75 @@ deserts%>%
 ```
 ```{r}
 deserts%>%
-  ggplot(aes(x =taxa))+geom_bar()+scale_y_log10()
+  ggplot(aes(x =taxa))+
+  geom_bar()+
+  scale_y_log10()+
+  labs(title = "number of taxa",
+       y = "count",
+       x = "taxa")
 ```
 
 
 4. For the taxa included in the study, use the fill option to show the proportion of individuals sampled by `plot_type.`
 ```{r}
 deserts%>%
-  ggplot(aes(x =taxa, fill = plot_type))+geom_bar()
+  ggplot(aes(x =taxa, fill = plot_type))+geom_bar()+scale_y_log10()
 ```
 
 5. What is the range of weight for each species included in the study? Remove any observations of weight that are NA so they do not show up in the plot.
 ```{r}
-
+deserts%>%
+  select(species, weight)%>%
+  group_by(species)%>%
+  arrange(desc(weight, na.rm=T))
+```
+```{r}
+deserts%>%
+  filter(weight!="NA")%>%
+  ggplot(aes(x=species, y=weight))+
+  geom_boxplot()+
+  coord_flip()
 ```
 
 6. Add another layer to your answer from #5 using `geom_point` to get an idea of how many measurements were taken for each species.
 ```{r}
-
+deserts%>%
+  filter(weight!="NA")%>%
+  ggplot(aes(x=species, y=weight))+
+  geom_boxplot(na.rm=T)+
+  geom_point(alpha = 0.1, color = "steelblue")+
+  coord_flip()+
+  labs(title = "weight of species",
+       x = "species",
+       y = "weight")
 ```
 
 7. [Dipodomys merriami](https://en.wikipedia.org/wiki/Merriam's_kangaroo_rat) is the most frequently sampled animal in the study. How have the number of observations of this species changed over the years included in the study?
 ```{r}
-
+dm <- deserts%>%
+  filter(species_id =="DM")%>%
+  group_by(year)%>%
+  summarize(n_samples=n())
+dm
+```
+```{r}
+dm%>%
+  ggplot(aes(x = year, y = n_samples))+
+  geom_point()+
+  geom_line(color = "orange")+
+  labs(title = "number of samples of DM through the years",
+       x = "year",
+       y = "number of samples")
 ```
 
 8. What is the relationship between `weight` and `hindfoot` length? Consider whether or not over plotting is an issue.
 ```{r}
-
+deserts%>%
+  ggplot(aes(x = weight, y = hindfoot_length))+
+  geom_point()+
+  geom_jitter()
 ```
+You can't deduct anything from it becuase the data is too scattered in large clumps.
 
 9. Which two species have, on average, the highest weight? Once you have identified them, make a new column that is a ratio of `weight` to `hindfoot_length`. Make a plot that shows the range of this new ratio and fill by sex.
 ```{r}
@@ -107,19 +144,34 @@ deserts%>% #if new column, use mutate
 ```
 ```{r}
 deserts%>%
-  filter(sepcies_id="NL" | species_id"DS")%>%
-  mutat(ratio-weight/hindfoot_length)%>%
-  select(sepcies_id, sex, weight, hindfoot_length, ratio)
+  filter(weight!="NA" & hindfoot_length!="NA")%>%
+  filter(species=="albigula" | species=="spectabilis")%>%
+  mutate(ratio=weight/hindfoot_length)%>%
+  select(species, sex, weight, hindfoot_length, ratio)
 ```
 
 ```{r}
 deserts%>%
-  filter(species_id=="NL" | species_id)
+  filter(weight!="NA" & hindfoot_length!="NA" & sex!="NA")%>%
+  filter(species=="albigula" | species=="spectabilis")%>%
+  mutate(ratio=weight/hindfoot_length)%>%
+  ggplot(aes(x=species, y = ratio, fill=sex))+geom_boxplot()+
+  labs(title = "species vs weight and hindfoot ratio",
+       x = "species",
+       y = "weight:hindfoot length ratio")
+  
 ```
 
 10. Make one plot of your choice! Make sure to include at least two of the aesthetics options you have learned.
 ```{r}
-
+deserts%>%
+  filter(sex!="NA")%>%
+  filter(taxa == "Rodent")%>%
+  ggplot(aes(x=sex, y=weight, fill = sex))+
+  geom_col(position = "dodge")+
+  labs(title = "weight differences between males and females in rodents",
+       x="sex",
+       y = "weight")
 ```
 
 ## Push your final code to GitHub!

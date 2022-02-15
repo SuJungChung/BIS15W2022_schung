@@ -57,7 +57,7 @@ colleges%>%
 colleges<- clean_names(colleges)
 colleges
 ```
-
+Data is tidy!
 2. Which cities in California have the highest number of colleges?
 ```{r}
 ncity<-colleges%>%
