@@ -151,6 +151,10 @@ deserts%>%
 ```
 
 ```{r}
+deserts
+```
+
+```{r}
 deserts%>%
   filter(weight!="NA" & hindfoot_length!="NA" & sex!="NA")%>%
   filter(species=="albigula" | species=="spectabilis")%>%
