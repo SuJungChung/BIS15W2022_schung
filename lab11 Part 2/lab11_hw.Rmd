@@ -85,13 +85,20 @@ gapminder%>%
 **5. How has life expectancy changed between 1952-2007 for each continent?**
 ```{r}
 gapminder%>%
-  group_by(year, continent)%>%
-  
+    group_by(continent, year)%>%
+  summarize(mean = mean(lifeExp))%>%
+  ggplot(aes(x=year, y=mean, fill = continent))+
+  geom_line()+
+  labs(title = "life expectancy for each continent through 1952 to 2007",
+       x = "year",
+       y = "average life expectancy")
 ```
 
 **6. We are interested in the relationship between per capita GDP and life expectancy; i.e. does having more money help you live longer?**
 ```{r}
-
+gapminder%>%
+  select(lifeExp, gdpPercap)%>%
+  ggplot(aes(x=gdpPercap, y=lifeExp))+geom_line()
 ```
 
 **7. Which countries have had the largest population growth since 1952?**
