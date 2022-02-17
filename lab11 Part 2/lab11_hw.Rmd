@@ -87,28 +87,51 @@ gapminder%>%
 gapminder%>%
     group_by(continent, year)%>%
   summarize(mean = mean(lifeExp))%>%
-  ggplot(aes(x=year, y=mean, fill = continent))+
+  ggplot(aes(x=year, y=mean, fill = continent, color=continent))+
   geom_line()+
-  labs(title = "life expectancy for each continent through 1952 to 2007",
+  labs(title = "Life expectancy for each continent through 1952 to 2007",
        x = "year",
-       y = "average life expectancy")
+       y = "average life expectancy")+
+    theme(plot.title = element_text(size = 15, face = "bold"),
+        axis.text = element_text(size = 10, face = "italic"),
+        axis.title = element_text(size = 10))
 ```
 
 **6. We are interested in the relationship between per capita GDP and life expectancy; i.e. does having more money help you live longer?**
 ```{r}
 gapminder%>%
   select(lifeExp, gdpPercap)%>%
-  ggplot(aes(x=gdpPercap, y=lifeExp))+geom_line()
+  ggplot(aes(x=gdpPercap, y=lifeExp))+
+  geom_point()+
+  geom_smooth(lm=TRUE)+
+  labs(title="Does having more money help you live longer?",
+       x= "Per Capita GDP",
+       y= "Life Expectancy (years)")+
+  theme_pander()
 ```
 
 **7. Which countries have had the largest population growth since 1952?**
 ```{r}
-
+popgrowth <- gapminder%>%
+  select(country, year, pop)%>%
+  pivot_wider(names_from ="year",
+              names_prefix="year_",
+               values_from ="pop")%>%
+  mutate(popgrow = year_2007-year_1952)%>%
+  arrange(desc(popgrow))
+popgrowth
 ```
 
 **8. Use your results from the question above to plot population growth for the top five countries since 1952.**
 ```{r}
-
+popgrowth%>%
+  top_n(5, popgrow)
+```
+```{r}
+gapminder%>%
+  filter(country=="China"|country=="India"|country=="Unites States",country=="Indonesia", country=="Brazil")%>%
+  ggplot(aes(x=year, y=pop))+
+  geom_point()
 ```
 
 **9. How does per-capita GDP growth compare between these same five countries?**
