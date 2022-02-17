@@ -1,6 +1,6 @@
 ---
 title: "Lab 11 Homework"
-author: "Please Add Your Name Here"
+author: "Sujung Chung"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -64,7 +64,12 @@ gapminder%>%
 **3. How do the distributions of life expectancy compare for the years 1952 and 2007?**
 ```{r}
 gapminder%>%
-  filter(year =="1952" & year =="2007")%>%
+  filter(year =="1952" | year =="2007")%>%
+    group_by(year)%>%
+  summarize(mean = mean(lifeExp),
+            min = min(lifeExp),
+            max = max(lifeExp))
+
   
 ```
 
