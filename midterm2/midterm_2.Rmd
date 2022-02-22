@@ -15,6 +15,14 @@ knitr::opts_chunk$set(echo = TRUE)
 options(scipen=999)
 ```
 
+```{r}
+library(dplyr)
+library(gapminder)
+library(tidyverse)
+library(ggthemes)
+```
+
+
 ## Instructions
 Answer the following questions and complete the exercises in RMarkdown. Please embed all of your code and push your final work to your repository. Your code should be organized, clean, and run free from errors. Be sure to **add your name** to the author header above. You may use any resources to answer these questions (including each other), but you may not post questions to Open Stacks or external help sites. There are 10 total questions.  
 
@@ -46,7 +54,7 @@ head(population)
 
 ```{r}
 population%>%
-summarize(number_nas = sum(is.na(population)))
+  summarize(number_nas = sum(is.na(population)))
 ```
 
 ```{r}
