@@ -36,7 +36,7 @@ population<-readr::read_csv("data/population_total.csv")
 income<-readr::read_csv("data/income_per_person_gdppercapita_ppp_inflation_adjusted.csv")
 ```
 ```{r}
-#life<-read_csv("data/life_expectancy_years.csv")
+life<-readr::read_csv("data/life_expectancy_years.csv")
 ```
 
 1. (3 points) Once you have an idea of the structure of the data, please make each data set tidy (hint: think back to pivots) and store them as new objects. You will need both the original (wide) and tidy (long) data!  
@@ -45,7 +45,8 @@ head(population)
 ```
 
 ```{r}
-#any_na(population)
+population%>%
+summarize(number_nas = sum(is.na(population)))
 ```
 
 ```{r}
@@ -59,7 +60,8 @@ population_long
 head(income)
 ```
 ```{r}
-any_na(income)
+income%>%
+  summarize(number_nas = sum(is.na(income)))
 ```
 
 
@@ -75,7 +77,8 @@ income_long
 head(life)
 ```
 ```{r}
-any_na(life)
+life%>%
+  summarize(number_nas = sum(is.na(life)))
 ```
 
 ```{r}
@@ -84,6 +87,11 @@ life_long<-life%>%
                values_to="life_expectancy",
                names_to="year")%>%
   filter(life_expectancy!="NA")
+
+life_long%>%
+  summarize(number_nas = sum(is.na(life_long)))
+```
+```{r}
 life_long
 ```
 
@@ -164,6 +172,7 @@ life_long%>%
   filter(country=="Kazakhstan")%>%
   ggplot(aes(x=as.integer(year), y=life_expectancy))+
   geom_line()+
+  theme_stata()+
   labs(title ="Life Expectancy from 1920 to 2020 of Kazakhstan",
        x="year",
        y="age")
@@ -191,7 +200,8 @@ population_long%>%
   filter(year>="1920" & year<="2020")%>%
   filter(country=="India"| country=="China"| country=="Indonesia"| country=="United States"| country=="Pakistan")%>%
   ggplot(aes(x=as.integer(year), y=population_size, color=country))+
-  geom_line()+
+  geom_line(size=1)+
+  theme_stata()+
   labs(title ="Population Growth over the past 100 years",
        x="year",
        y="population size (indiduals)")
@@ -220,23 +230,59 @@ income_long%>%
 ```{r}
 #plot
 income_long%>%
+  filter(year>="1920" & year<="2020")%>%
+  filter(country=="United Arab Emirates"| country=="Qatar"| country=="Brunei"| country=="Kuwait"| country=="Luzembourg")%>%
+  ggplot(aes(x=as.integer(year), y=income_per_person))+
+  geom_line(size=1)+
+  facet_wrap(.~country)+
+  theme_stata()+
+  labs(title ="GDP per person over the past 100 years",
+       x="year",
+       y="GDP per person")
 ```
-
-NOTES: 
-Compare in change in GDP between countries.
-finding the difference in start and end could not account for changes in population
-could interpret different ways
+NOTE: Drop in GDP per person around the 1980s was a result of a drop in oil prices due to reduced demand and overproduction.
 
 9. (3 points) Create three new objects that restrict each data set (life expectancy, population, income) to the years 1920-2020. Hint: I suggest doing this with the long form of your data. Once this is done, merge all three data sets using the code I provide below. You may need to adjust the code depending on how you have named your objects. I called mine `life_expectancy_100`, `population_100`, and `income_100`. For some of you, learning these `joins` will be important for your project.  
 
 ```{r}
-#gapminder_join <- inner_join(life_expectancy_100, population_100, by= c("country", "year"))
-#gapminder_join <- inner_join(gapminder_join, income_100, by= c("country", "year"))
-#gapminder_join
+income_100 <- income_long%>%
+  filter(year>="1920" & year<="2020")
+   
+life_100 <- life_long%>%
+  filter(year>="1920" & year<="2020")
+
+population_100<- population_long%>%
+  filter(year>="1920" & year<="2020")
+
+gapminder_join <- inner_join(life_100, population_100, by= c("country", "year"))
+gapminder_join <- inner_join(gapminder_join, income_100, by= c("country", "year"))
+gapminder_join
 ```
 
-10. (4 points) Use the joined data to perform an analysis of your choice. The analysis should include a comparison between two or more of the variables `life_expectancy`, `population`, or `income.`  
+10. (4 points) Use the joined data to perform an analysis of your choice. The analysis should include a comparison between two or more of the variables `life_expectancy`, `population`, or `income.` 
+Question: Does a higher GDP indicate a higher life expectancy?
 ```{r}
-
+#countries with the smallest change in GDP
+gapminder_join%>%
+  group_by(country)%>%
+  summarize(max=max(income_per_person),
+            min=min(income_per_person))%>%
+  mutate(change_income_per_person=max-min)%>%
+  arrange(change_income_per_person)%>%
+  top_n(-6, change_income_per_person)
 ```
 
+```{r}
+#plot
+gapminder_join%>%
+  filter(country=="Burundi"| country=="Somalia"| country=="Niger"| country=="Malawi"| country=="Sierra Leone"| country=="Mozambique")%>%
+  ggplot(aes(x=income_per_person, y=life_expectancy))+
+  geom_point(size=1)+
+  geom_smooth(method="lm", se=FALSE, color="red")+
+  facet_wrap(.~country)+
+  theme_stata()+
+  labs(title ="Life Expectancy vs GDP per Person",
+       x="GDP per person",
+       y="Life Expectancy")
+```
+NOTE: I originally thought that life expectancy should be highest when the GDP is highest.  This trend is followed by Mozambique, Malawi, and Sierra Leone.  However, this is not the case for Niger, Somalia, and Burundi.  For Somalia, their highest life expectancy is when their GDP was the lowest.
