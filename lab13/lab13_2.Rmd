@@ -315,8 +315,7 @@ ui <- dashboardPage(
       box(title = "Population", width = 4,
         selectInput("x", "Select Population", choices = c("AK.PEN","BAN.JAS","BC","DENALI","ELLES","GTNP","INT.AK","MEXICAN","MI","MT","N.NWT","ONT","SE.AK","SNF", "SS.NWT","YNP","YUCH"), selected = "AK.PEN")
       ),
-     box(
-       title = "Wolf Male and Female Populations", width = 7,
+     box(title = "Wolf Male and Female Populations", width = 7,
        plotOutput("plot", width = "700px", height ="600px")
      )
      ) 
