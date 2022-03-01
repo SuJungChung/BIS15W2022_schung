@@ -41,6 +41,9 @@ Copy and pasting code into the console is okay for tiny example apps, but it's n
 ```{r, echo=FALSE}
 homerange <- readr::read_csv("data/Tamburelloetal_HomeRangeDatabase.csv")
 ```
+```{r}
+homerange
+```
 
 Here is the app so you can copy/ paste.  
 ```{r, eval=F, echo=T}
