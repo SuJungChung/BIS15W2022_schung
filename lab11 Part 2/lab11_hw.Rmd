@@ -18,6 +18,10 @@ Answer the following questions and complete the exercises in RMarkdown. Please e
 **In this homework, you should make use of the aesthetics you have learned. It's OK to be flashy!**
 
 Make sure to use the formatting conventions of RMarkdown to make your report neat and clean!  
+```{r}
+#install.packages("naniar")
+```
+
 
 ## Load the libraries
 ```{r message=FALSE, warning=FALSE}
@@ -109,8 +113,7 @@ gapminder%>%
   geom_smooth(lm=TRUE)+
   labs(title="Does having more money help you live longer?",
        x= "Per Capita GDP",
-       y= "Life Expectancy (years)")+
-  theme_pander()
+       y= "Life Expectancy (years)")
 ```
 
 **7. Which countries have had the largest population growth since 1952?**
@@ -135,7 +138,6 @@ gapminder%>%
   filter(country=="China" | country=="India" | country=="Unites States" | country=="Indonesia" | country=="Brazil")%>%
   ggplot(aes(x=year, y=pop, fill=country, color=country))+
   geom_line(size=1.5)+
-  theme_pander()+
   labs(title="Top 5 Population Growth from 1952 to 2007",
        x="year",
        y="population size")+
