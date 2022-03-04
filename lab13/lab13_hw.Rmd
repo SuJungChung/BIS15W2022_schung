@@ -22,6 +22,7 @@ Make sure to use the formatting conventions of RMarkdown to make your report nea
 library(tidyverse)
 library(shiny)
 library(shinydashboard)
+library(janitor)
 ```
 
 ## Choose Your Adventure!
@@ -34,7 +35,8 @@ The data for this assignment come from the [University of California Information
 ```{r}
 uc<-readr::read_csv("data/uc_data/UC_admit.csv")
 summary(uc)
-names(uc)
+uc <- clean_names(uc)
+uc
 ```
 ```{r}
 uc %>% 
@@ -44,21 +46,24 @@ uc %>%
 **2. The president of UC has asked you to build a shiny app that shows admissions by ethnicity across all UC campuses. Your app should allow users to explore year, campus, and admit category as interactive variables. Use shiny dashboard and try to incorporate the aesthetics you have learned in ggplot to make the app neat and clean.**
 ```{r}
 uc%>%
-  distinct(Academic_Yr)
+  distinct(academic_yr)
 ```
 ```{r}
 uc%>%
-  distinct(Campus)
+  distinct(campus)
 ```
 ```{r}
 uc%>%
-  distinct(Category)
+  distinct(category)
 ```
 ```{r}
 uc_wide<-uc%>%
-  pivot_wider(names_from = "Category",
-              values_from = "FilteredCountFR")
+  pivot_wider(names_from = "category",
+              values_from = "filtered_count_fr")
+uc_wide
 ```
+
+
 
 
 ```{r}
@@ -84,8 +89,10 @@ server <- function(input, output, session) {
   output$plot <- renderPlot({
     
     uc%>%
-      filter(Academic_Yr=="input$year")%>%
-  ggplot(aes_string(x = input$campus, y = input$category, fill="Ethnicity")) +
+      filter(academic_yr=="input$year")%>%
+      filter(campus=="input$campus")%>%
+      filter(category=="input$category")%>%
+  ggplot(aes_string(x = input$campus, y = "filtered_count_fr", fill="ethnicity")) +
       geom_bar(position="dodge") + 
       theme_light(base_size = 18)
   })
@@ -95,6 +102,15 @@ server <- function(input, output, session) {
 shinyApp(ui, server)
 ```
 
+```{r}
+  uc%>%
+      filter(academic_yr=="2011")%>%
+      filter(campus=="Davis")%>%
+      filter(category=="Applicants")%>%
+  ggplot(aes_string(x = campus, y = filtered_count_fr, fill = ethnicity)) +
+      geom_bar(position="dodge") + 
+      theme_light(base_size = 18)
+```
 
 **3. Make alternate version of your app above by tracking enrollment at a campus over all of the represented years while allowing users to interact with campus, category, and ethnicity.**  
 ```{r}
