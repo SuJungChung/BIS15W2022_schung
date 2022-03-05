@@ -1,6 +1,6 @@
 ---
 title: "Lab 10 Homework"
-author: "Please Add Your Name Here"
+author: "Sujung Chung"
 date: "`r Sys.Date()`"
 output:
   html_document: 
@@ -84,7 +84,7 @@ deserts%>%
 deserts%>%
   select(species, weight)%>%
   group_by(species)%>%
-  arrange(desc(weight, na.rm=T))
+  arrange(desc(weight))
 ```
 ```{r}
 deserts%>%
