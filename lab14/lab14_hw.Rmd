@@ -38,13 +38,17 @@ beachbugs_long <- readr::read_csv("data/beachbugs_long.csv")
 Clean up the column names (no capitals, not spaces) of `superhero_info`, then use 2 functions to remind yourself of structure of the `superhero_info` data set.
 
 ```{r}
-
+superhero_info <- clean_names(superhero_info)
+summary(superhero_info)
+head(superhero_info)
 ```
 
 ### 2.
 Are bad guys bigger? Make box-plots of weight by `alignment` (alignment on the x-axis).
 ```{r}
-
+superhero_info%>%
+  ggplot(aes(x=alignment, y = height))+
+  geom_boxplot()
 ```
 
 ### 3. 
