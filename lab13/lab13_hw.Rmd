@@ -20,6 +20,7 @@ Make sure to use the formatting conventions of RMarkdown to make your report nea
 ## Libraries
 ```{r message=FALSE, warning=FALSE}
 library(tidyverse)
+#install.packages("shiny")
 library(shiny)
 library(shinydashboard)
 library(janitor)
@@ -101,9 +102,46 @@ shinyApp(ui, server)
       geom_col()
 ```
 
-**3. Make alternate version of your app above by tracking enrollment at a campus over all of the represented years while allowing users to interact with campus, category, and ethnicity.**  
-```{r}
+**3. Make alternate version of your app above by tracking enrollment at a campus over all of the represented years while allowing users to interact with campus, category, and ethnicity.**
 
+```{r}
+uc%>%
+  distinct(ethnicity)
+```
+
+```{r}
+library(shiny)
+
+ui <- dashboardPage(
+  dashboardHeader(title ="Admission Stats for UC Schools"),
+  dashboardSidebar(disable = T),
+  dashboardBody(
+    fluidRow(
+      box(title = "Interactive Variables", width = 4,
+        selectInput("x", "Select Ethnicity", choices = c("International", "Unknown", "White", "Asian", "Chicano/Latino", "American Indian", "African America", "All")),
+   selectInput("y", "Select Campus", choices = c("Davis", "Berkeley", "Irvine", "Los_Angeles","Merced","Riverside","San_Diego","Santa_Barbara", "Santa_Cruz")),
+    selectInput("z", "Select Category", choices = c("Applicants", "Admits", "Enrollees"))),
+box(title = "Admission by Ethnicity", width = 7,
+          plotOutput("plot", width ="700px", height ="800px"))
+)
+)
+)
+
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    
+    uc%>%
+      filter(ethnicity=="input$x" & campus =="input$y" & campus =="input$z")%>%
+  ggplot(aes(x = academic_yr, y = filtered_count_fr)) +
+      geom_col() + 
+      theme_light(base_size = 18) +
+      labs(x="Year",
+           y="Number of Individuals")
+  })
+  session$onSessionEnded(stopApp)
+}
+
+shinyApp(ui, server)
 ```
 
 
