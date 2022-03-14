@@ -47,7 +47,8 @@ head(superhero_info)
 Are bad guys bigger? Make box-plots of weight by `alignment` (alignment on the x-axis).
 ```{r}
 superhero_info%>%
-  ggplot(aes(x=alignment, y = height))+
+  filter(alignment != "NA")%>%
+  ggplot(aes(x=alignment, y = weight))+
   geom_boxplot()
 ```
 
@@ -55,16 +56,26 @@ superhero_info%>%
 Now, make a violin plot of weight by `alignment` (alignment on the x-axis). Add some color!
   What information can you observe in the violin plot that was not visible in the boxplot?
 ```{r}
-
+superhero_info%>%
+  filter(alignment != "NA")%>%
+  ggplot(aes(x = alignment, y = weight, fill= alignment))+
+  geom_violin()+
+  coord_flip()
 ```
-
+The Violin plot shows that good guys have 2 peaks for their weight distribution.
 
 
 ### 4. 
 Use `alpha = .5` in `geom_boxplot()` and `geom_violin()` to layer both plots on top of one another. What does this tell you about the distribution of weight in "`bad`" guys?
 ```{r}
-
+superhero_info%>%
+  filter(alignment != "NA")%>%
+  ggplot(aes(x = alignment, y = weight, fill= alignment))+
+  geom_boxplot(alpha = .5)+
+  geom_violin(alpha = .5)+
+  coord_flip()
 ```
+Tells us that there are more bad guys that weigh around 80 pounds than what I would have initially believed to be from the boxplot.
 
 ### 5. 
 Box plots are great for showing how the distribution of a numeric variable (e.g. weight) varies among a categorical variable (e.g. alignment).
@@ -73,7 +84,8 @@ Box plots are great for showing how the distribution of a numeric variable (e.g.
   What is your categorical variable?
 
 ```{r}
-
+superhero_info%>%
+  filter(race != )
 ```
 
 ### 6. 
